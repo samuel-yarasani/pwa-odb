@@ -3,6 +3,8 @@ import "./App.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import odb from "./images/odb.png";
+import { BsFillShareFill } from "react-icons/bs";
+
 function App() {
   const [Data, setData] = useState(null);
   useEffect(() => {
@@ -49,8 +51,13 @@ function App() {
       )}
       {Data && (
         <div className="bg-cover">
-          <div>
-            
+          <div className="app">
+            <div className="header">
+              <h1 className="title">{"Today's Daily Bread"}</h1>
+              <button className="share">
+                <BsFillShareFill></BsFillShareFill>
+              </button>
+            </div>
           </div>
         </div>
       )}
