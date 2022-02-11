@@ -4,12 +4,16 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import odb from "./images/odb.png";
 import { BsFillShareFill } from "react-icons/bs";
-import { GrFormNext } from "react-icons/gr";
+import { AiFillPauseCircle } from "react-icons/ai";
 import { BsFillVolumeUpFill } from "react-icons/bs";
 import Swal from "sweetalert2";
+import { RWebShare } from "react-web-share";
 
 function App() {
   const [Data, setData] = useState(null);
+  const [s, sets] = useState(true);
+  const [audio, setaudio] = useState(null);
+
   useEffect(() => {
     var today = new Date();
     var dd = String(today.getDate()).padStart(2, "0");
@@ -35,10 +39,12 @@ function App() {
         c = c.substr(ci + 1);
         ci = c.indexOf("<");
         c = c.substr(0, ci);
+        json.data[0].r = json.data[0].response.replace(/(<([^>]+)>)/gi, "");
         json.data[0].verse = a;
         json.data[0].verse_url = b;
         json.data[0].verse_reference = c;
         setData(json.data[0]);
+        setaudio(new Audio(json.data[0].audio_url));
       })
       .catch((err) => {
         Swal.fire({
@@ -49,6 +55,19 @@ function App() {
         console.log(err);
       });
   }, []);
+
+  async function im(p) {
+    const response = await fetch(p);
+    const blob = await response.blob();
+    const filesArray = [
+      new File([blob], "image.jpg", {
+        type: "image/jpeg",
+        lastModified: new Date().getTime(),
+      }),
+    ];
+
+    return filesArray;
+  }
 
   const modle = Swal.mixin({
     customClass: {
@@ -61,6 +80,16 @@ function App() {
     titleStyling: false,
   });
 
+  function play() {
+    audio.play();
+    sets(false);
+  }
+
+  function pause() {
+    audio.pause();
+    sets(true);
+  }
+
   return (
     <div>
       {!Data && (
@@ -72,9 +101,19 @@ function App() {
         <div className="app">
           <div className="header">
             <h1 className="header-title">{"Today's Daily Bread"}</h1>
-            <button className="header-share">
-              <BsFillShareFill></BsFillShareFill>
-            </button>
+            <RWebShare
+              data={{
+                text:
+                  "Click here to see Today's Daily Bread,Today's Insight,Bible In-One-Year and Today's Verse \n" +
+                  window.location.href,
+                title: "Our Daily Bread",
+              }}
+              onClick={() => console.log("shared successfully!")}
+            >
+              <button className="header-share">
+                <BsFillShareFill></BsFillShareFill>
+              </button>
+            </RWebShare>
           </div>
           <div className="top">
             <div className="title">
@@ -152,9 +191,16 @@ function App() {
           <div className="ts">
             <div className="ts-header">
               <h1 className="ts-header-title">{"Today's Scripture:"}</h1>
-              <button className="ts-header-icon">
-                <BsFillVolumeUpFill></BsFillVolumeUpFill>
-              </button>
+              {s && (
+                <button className="ts-header-icon" onClick={() => play()}>
+                  <BsFillVolumeUpFill></BsFillVolumeUpFill>
+                </button>
+              )}
+              {!s && (
+                <button className="ts-header-icon" onClick={() => pause()}>
+                  <AiFillPauseCircle></AiFillPauseCircle>
+                </button>
+              )}
             </div>
             <div className="ts-content">
               <p dangerouslySetInnerHTML={{ __html: Data.content }} />
