@@ -25,7 +25,7 @@ function App() {
       )
       .then((json) => {
         var index = json.data[0].verse.indexOf("<a");
-        var a, b, c, d, ai, ci, bi;
+        var a, b, c, ai, ci, bi;
         a = json.data[0].verse.substr(0, index);
         ai = a.indexOf(">");
         a = a.substr(ai + 1);
@@ -56,18 +56,7 @@ function App() {
       });
   }, []);
 
-  async function im(p) {
-    const response = await fetch(p);
-    const blob = await response.blob();
-    const filesArray = [
-      new File([blob], "image.jpg", {
-        type: "image/jpeg",
-        lastModified: new Date().getTime(),
-      }),
-    ];
-
-    return filesArray;
-  }
+  
 
   const modle = Swal.mixin({
     customClass: {
@@ -94,7 +83,7 @@ function App() {
     <div>
       {!Data && (
         <div className="bg-cover loading">
-          <img class="rotate" width="150" height="150" src={odb}></img>
+          <img className="rotate" width="150" height="150" src={odb} alt="Logo"></img>
         </div>
       )}
       {Data && (
@@ -127,7 +116,7 @@ function App() {
               </a>
 
               <svg
-                class="biy-icon"
+                className="biy-icon"
                 width="24"
                 height="24"
                 viewBox="0 0 24 24"
@@ -137,7 +126,7 @@ function App() {
                   (window.location.href = Data.bible_in_a_year_url)
                 }
               >
-                <path d="M8 3L17 12L8 21" stroke-width="3" />
+                <path d="M8 3L17 12L8 21" strokeWidth="3" />
               </svg>
             </div>
 
@@ -152,7 +141,7 @@ function App() {
               </a>
 
               <svg
-                class="v-icon"
+                className="v-icon"
                 width="24"
                 height="24"
                 viewBox="0 0 24 24"
@@ -160,7 +149,7 @@ function App() {
                 stroke="currentcolor"
                 onClick={() => (window.location.href = Data.verse_url)}
               >
-                <path d="M8 3L17 12L8 21" stroke-width="3" />
+                <path d="M8 3L17 12L8 21" strokeWidth="3" />
               </svg>
             </div>
 
@@ -221,7 +210,7 @@ function App() {
             <div className="ts-header">
               <h1 className="ts-header-title">{"Today's Picture"}</h1>
             </div>
-            <img className="pic-img" src={Data.shareable_image}></img>
+            <img className="pic-img" src={Data.shareable_image} alt="Today's"></img>
           </div>
         </div>
       )}
