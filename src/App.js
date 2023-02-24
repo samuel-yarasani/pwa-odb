@@ -24,26 +24,29 @@ function App() {
         `https://api.experience.odb.org/devotionals/v2?on=${mm}-${dd}-${yyyy}`
       )
       .then((json) => {
-        var index = json.data[0].verse.indexOf("<a");
-        var a, b, c, ai, ci, bi;
-        a = json.data[0].verse.substr(0, index);
-        ai = a.indexOf(">");
-        a = a.substr(ai + 1);
-        b = json.data[0].verse.substr(index + 1);
-        bi = b.indexOf('"');
-        b = b.substr(bi + 1);
-        bi = b.indexOf('"');
-        c = b.substr(bi + 1);
-        b = b.substr(0, bi);
-        ci = c.indexOf(">");
-        c = c.substr(ci + 1);
-        ci = c.indexOf("<");
-        c = c.substr(0, ci);
-        json.data[0].r = json.data[0].response.replace(/(<([^>]+)>)/gi, "");
-        json.data[0].verse = a;
-        json.data[0].verse_url = b;
-        json.data[0].verse_reference = c;
-        setData(json.data[0]);
+        const verse = json.data[0].verse;
+        const verseStart = verse.indexOf('>') + 1;
+        const verseEnd = verse.indexOf('"', verseStart);
+        const verseText = verse.substring(verseStart, verseEnd);
+
+        const verseUrlStart = verseEnd + 2;
+        const verseUrlEnd = verse.indexOf('"', verseUrlStart);
+        const verseUrl = verse.substring(verseUrlStart, verseUrlEnd);
+
+        const referenceStart = verse.indexOf('>', verseUrlEnd) + 1;
+        const referenceEnd = verse.indexOf('<', referenceStart);
+        const referenceText = verse.substring(referenceStart, referenceEnd);
+
+        const responseText = json.data[0].response.replace(/(<([^>]+)>)/gi, "");
+
+        setData({
+          ...json.data[0],
+          verse: verseText,
+          verse_url: verseUrl,
+          verse_reference: referenceText,
+          r: responseText
+        });
+
         setaudio(new Audio(json.data[0].audio_url));
       })
       .catch((err) => {
@@ -79,8 +82,9 @@ function App() {
     sets(true);
   }
 
+
   return (
-    <div>
+    <div className={"container"}>
       {!Data && (
         <div className="bg-cover loading">
           <img className="rotate" width="150" height="150" src={odb} alt="Logo"></img>
@@ -93,8 +97,7 @@ function App() {
             <RWebShare
               data={{
                 text:
-                  "Click here to see Today's Daily Bread,Today's Insight,Bible In-One-Year and Today's Verse \n" +
-                  window.location.href,
+                  "Click here to see Today's Daily Bread,Today's Insight,Bible In-One-Year and Today's Verse \n",
                 title: "Our Daily Bread",
               }}
               onClick={() => console.log("shared successfully!")}
